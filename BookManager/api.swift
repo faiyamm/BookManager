@@ -1,14 +1,14 @@
 //
-//  ContentView.swift
+//  api.swift
 //  BookManager
 //
-//  Created by Fai on 07/01/26.
+//  Created by Fai on 16/01/26.
 //
 
-import SwiftUI
+import Foundation
 
-struct ContentView: View {
-    var books = [
+func getBooks() -> [Book] {
+    return [
         Book(
             title: "The Fellowship of the Ring",
             author: "J.R.R. Tolkien",
@@ -34,26 +34,4 @@ struct ContentView: View {
             series: "LOTR"
         )
     ]
-    
-    var body: some View {
-        NavigationStack {
-            List(books, id: \.self) { book in
-                NavigationLink(destination: BookDetailView(bookInDetailView: book)) {
-                    HStack {
-                        Image(book.cover)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: 60, maxHeight: 60)
-                            
-                        Text(book.title)
-                    }
-                }
-            }
-            .navigationTitle("Book Manager")
-        }
-    }
-}
-
-#Preview {
-    ContentView()
 }
