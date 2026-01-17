@@ -9,36 +9,38 @@ import SwiftUI
 
 struct ContentView: View {
     @State var books = getBooks()
-    @State private var showBookSheet = false
-
-    @State var newBook = Book(title: "", author: "", details: "", cover: "", year: 0, series: "")
-
+    @State var newBook = Book()
+    @State private var showBookSheet: Bool = false
+    
     var body: some View {
         NavigationStack {
-            List($books) { $book in
-                NavigationLink(destination: BookDetailView(book: $book)) {
-                    HStack {
-                        Image(book.cover)
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                        Text(book.title)
+            List {
+                ForEach($books) { $book in
+                    NavigationLink(destination: BookDetailView(book: $book)) {
+                        BookListItem(book: book)
                     }
                 }
+                .onDelete { indices in books.remove(atOffsets: indices) }
             }
+            .navigationTitle("My Library")
             .toolbar {
-                Button(action: { showBookSheet.toggle() }) {
-                    Image(systemName: "plus")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        newBook = Book() // reset to blank
+                        showBookSheet.toggle()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                    }
                 }
             }
             .sheet(isPresented: $showBookSheet) {
                 AddEditView(book: $newBook)
-            }
-
-            .onChange(of: showBookSheet) { oldValue, newValue in
-                if newValue == false && !newBook.title.isEmpty {
-                    books.append(newBook)
-                    newBook = Book(title: "", author: "", details: "", cover: "", year: 0, series: "")
-                }
+                    .onDisappear {
+                        if !newBook.title.isEmpty {
+                            books.append(newBook)
+                        }
+                    }
             }
         }
     }

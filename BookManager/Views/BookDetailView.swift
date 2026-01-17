@@ -13,43 +13,62 @@ struct BookDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading) {
-                HStack {
-                    if !book.cover.isEmpty {
-                        Image(book.cover)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 150, height: 200)
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(alignment: .top, spacing: 20) {
+                    Image(book.cover)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 140, height: 200)
+                        .cornerRadius(8)
+                        .shadow(radius: 5)
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(book.title)
+                            .font(.title.bold())
+                        
+                        Text(book.author)
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            CustomCapsule(text: book.genre.rawValue, color: .blue)
+                            CustomCapsule(text: book.readingStatus.rawValue, color: .orange)
+                        }
+                    }
+                }
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Synopsis")
+                        .font(.headline)
+                    Text(book.details)
+                        .foregroundStyle(.primary)
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("My Review")
+                        .font(.headline)
+                    
+                    HStack {
+                        ForEach(0..<5) { index in
+                            Image(systemName: index < book.rating ? "star.fill" : "star")
+                                .foregroundColor(.yellow)
+                        }
                     }
                     
-                    VStack(alignment: .leading) {
-                        Text(book.title)
-                            .font(.largeTitle)
-                            .bold()
-
-                        Text(book.author)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .padding(.top, 10)
-                        
-                        Spacer()
-                    }
-                    .padding(.top, 20)
+                    Text(book.review.isEmpty ? "No review yet." : book.review)
+                        .font(.body)
+                        .italic(book.review.isEmpty)
                 }
-                
-                Divider().padding(.vertical)
-                
-                Text(book.details)
-                    .font(.body)
             }
-            .padding(20)
+            .padding()
         }
+        .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: { showEditSheet.toggle() }) {
-                    Image(systemName: "pencil")
-                }
+            Button { showEditSheet.toggle() } label: {
+                Text("Edit")
             }
         }
         .sheet(isPresented: $showEditSheet) {
@@ -65,6 +84,8 @@ struct BookDetailView: View {
         details: "Sed rutrum porta massa. Ut sed lorem elementum, aliquam lectus quis, aliquet velit. Cras libero sem, fermentum sed feugiat sit amet, euismod gravida libero. Aenean cursus egestas nunc et placerat. Mauris maximus dui lectus, vitae rutrum metus fringilla et. Sed mollis, nibh non iaculis fringilla, turpis dolor varius tortor, ac ullamcorper dolor justo sed arcu. Vivamus in dui pulvinar, pellentesque mi non, posuere nisl. Cras id orci ex. Integer neque nunc, condimentum eu tristique eget, dapibus quis mauris. Phasellus nec quam non est euismod laoreet non sed lorem.",
         cover: "lotr_fellowship",
         year: 2018,
-        series: "LOTR"
+        series: "LOTR",
+        review: "Praesent a sem a neque pretium fermentum. Nullam facilisis tincidunt tortor, a bibendum odio maximus vel. In hac habitasse platea dictumst. Curabitur in tempor lacus, at dignissim massa.",
+        rating: 3
     )))
 }
