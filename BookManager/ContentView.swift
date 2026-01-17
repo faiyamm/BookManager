@@ -6,56 +6,54 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    var books = [
+        Book(
+            title: "The Fellowship of the Ring",
+            author: "J.R.R. Tolkien",
+            details: "The first volume of The Lord of the Rings, following Frodo Baggins as he sets out with the Fellowship to destroy the One Ring and thwart Sauron's rise.",
+            cover: "lotr_fellowship",
+            year: 1954,
+            series: "LOTR"
+        ),
+        Book(
+            title: "The Two Towers",
+            author: "J.R.R. Tolkien",
+            details: "The second volume of The Lord of the Rings, chronicling the breaking of the Fellowship, the journey of Frodo and Sam toward Mordor, and the battles that shape Middle-earth's fate.",
+            cover: "lotr_towers",
+            year: 1954,
+            series: "LOTR"
+        ),
+        Book(
+            title: "The Return of the King",
+            author: "J.R.R. Tolkien",
+            details: "The concluding volume of The Lord of the Rings, depicting the final struggle against Sauron, the destruction of the One Ring, and the crowning of the true king.",
+            cover: "lotr_king",
+            year: 1954,
+            series: "LOTR"
+        )
+    ]
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+        NavigationStack {
+            List(books, id: \.self) { book in
+                NavigationLink(destination: BookDetailView(bookInDetailView: book)) {
+                    HStack {
+                        Image(book.cover)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: 60, maxHeight: 60)
+                            
+                        Text(book.title)
                     }
                 }
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+            .navigationTitle("Book Manager")
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
