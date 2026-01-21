@@ -16,10 +16,11 @@ func getBooks() -> [Book] {
             cover: "lotr_fellowship",
             year: 1954,
             series: "The Lord of the Rings",
-            review: "Sed id facilisis elit, vitae fringilla leo. Nam ultrices est ac sapien pretium, in lacinia elit iaculis. Cras sed iaculis eros. Curabitur maximus felis turpis, tempor tincidunt ante dapibus vel. Suspendisse commodo condimentum quam, eu fringilla lectus dictum non. Mauris felis magna, aliquet eget luctus quis, posuere sit amet nulla.",
+            review: "An absolute classic. The world-building is unmatched.",
             rating: 5,
             genre: .fantasy,
-            readingStatus: .read
+            readingStatus: .read,
+            isFavorite: true // Starts as a favorite
         ),
         
         Book(
@@ -29,10 +30,11 @@ func getBooks() -> [Book] {
             cover: "lotr_towers",
             year: 1954,
             series: "The Lord of the Rings",
-            review: "Sed id facilisis elit, vitae fringilla leo. Nam ultrices est ac sapien pretium, in lacinia elit iaculis. Cras sed iaculis eros. Curabitur maximus felis turpis, tempor tincidunt ante dapibus vel. Suspendisse commodo condimentum quam, eu fringilla lectus dictum non. Mauris felis magna, aliquet eget luctus quis, posuere sit amet nulla.",
+            review: "Great pacing and incredible battle scenes.",
             rating: 4,
             genre: .fantasy,
-            readingStatus: .read
+            readingStatus: .read,
+            isFavorite: false
         ),
         
         Book(
@@ -42,10 +44,11 @@ func getBooks() -> [Book] {
             cover: "lotr_king",
             year: 1954,
             series: "The Lord of the Rings",
-            review: "Sed id facilisis elit, vitae fringilla leo. Nam ultrices est ac sapien pretium, in lacinia elit iaculis. Cras sed iaculis eros. Curabitur maximus felis turpis, tempor tincidunt ante dapibus vel. Suspendisse commodo condimentum quam, eu fringilla lectus dictum non. Mauris felis magna, aliquet eget luctus quis, posuere sit amet nulla.",
-            rating: 1,
+            review: "A perfect conclusion to the greatest fantasy epic of all time.",
+            rating: 5,
             genre: .fantasy,
-            readingStatus: .read
+            readingStatus: .read,
+            isFavorite: false
         ),
     ]
 }

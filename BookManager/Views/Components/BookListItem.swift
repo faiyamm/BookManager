@@ -12,13 +12,14 @@ struct BookListItem: View {
     
     var body: some View {
         HStack(spacing: 15) {
+
             Image(book.cover.isEmpty ? "default_cover" : book.cover)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 50, height: 70)
-                .background(Color.gray.opacity(0.2))
+                .background(Color.gray.opacity(0.1))
                 .cornerRadius(4)
-                .shadow(radius: 2)
+                .shadow(radius: 1)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
@@ -27,6 +28,10 @@ struct BookListItem: View {
                 Text(book.author)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                
+                if book.isFavorite {
+                    Text("❤️").font(.caption)
+                }
             }
         }
         .padding(.vertical, 4)
