@@ -20,7 +20,7 @@ func getBooks() -> [Book] {
             rating: 5,
             genre: .fantasy,
             readingStatus: .read,
-            isFavorite: true // Starts as a favorite
+            isFavorite: true
         ),
         
         Book(
@@ -50,5 +50,33 @@ func getBooks() -> [Book] {
             readingStatus: .read,
             isFavorite: false
         ),
+        
+        Book(
+            title: "Dune",
+            author: "Frank Herbert",
+            details: "Set on the desert planet Arrakis, Dune is the story of the boy Paul Atreides, heir to a noble family tasked with ruling an inhospitable world where the only thing of value is the 'spice' melange.",
+            cover: "dune",
+            year: 1965,
+            series: "Dune",
+            review: "A masterpiece of science fiction. The political intrigue and ecological themes are still incredibly relevant today.",
+            rating: 5,
+            genre: .scienceFiction,
+            readingStatus: .reading,
+            isFavorite: true
+        ),
+        
+        Book(
+            title: "Harry Potter and the Philosopher's Stone",
+            author: "J.K. Rowling",
+            details: "Harry Potter has never even heard of Hogwarts when the letters start dropping on the doormat at number four, Privet Drive. Then, on Harry's eleventh birthday, a giant of a man called Rubeus Hagrid bursts in with some astonishing news.",
+            cover: "harrypotter",
+            year: 1997,
+            series: "Harry Potter",
+            review: "The book that started it all. Magical, charming, and impossible to put down.",
+            rating: 4,
+            genre: .fantasy,
+            readingStatus: .read,
+            isFavorite: false
+        )
     ]
 }

@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct FavoriteToggle: View {
     @Binding var isFavorite: Bool
     
@@ -28,7 +26,7 @@ struct FavoriteToggle: View {
             Toggle(isOn: $isFavorite) {
                 Label(isFavorite ? "Remove from Favorites" : "Add to Favorites",
                       systemImage: isFavorite ? "heart.fill" : "heart")
-                    .foregroundColor(isFavorite ? .red : .gray)
+                    .foregroundStyle(isFavorite ? .red : .gray)
             }
             .toggleStyle(.button)
             .buttonStyle(.plain)

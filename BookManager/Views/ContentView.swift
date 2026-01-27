@@ -21,7 +21,7 @@ struct ContentView: View {
                 }
                 
                 // Favorites View
-                FavoritesView(books: $books)
+                FavoritesView(favoriteBooks: $books)
                     .tabItem {
                         Label("Favorites", systemImage: "heart.fill")
                     }
