@@ -18,8 +18,7 @@ struct FilterView: View {
     init(selectedGenre: Binding<Genre?>, selectedReadingStatus: Binding<ReadingStatus?>) {
         self._selectedGenre = selectedGenre
         self._selectedReadingStatus = selectedReadingStatus
-        // initializing the temp states with the current values so the
-        // pickers show what is already selected when the sheet opens.
+
         self._tempSelectedGenre = State(initialValue: selectedGenre.wrappedValue)
         self._tempSelectedReadingStatus = State(initialValue: selectedReadingStatus.wrappedValue)
     }

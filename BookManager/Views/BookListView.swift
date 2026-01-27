@@ -9,7 +9,10 @@ import SwiftUI
 
 struct BookListView: View {
     @Binding var books: [Book]
-    @State private var tempBook: Book = Book()
+
+    @ObservedObject var bookViewModel: BookViewModel
+    
+    @State private var newBook: Book = Book(title: "", author: "", details: "", cover: "", series: "", review: "", rating: 1)
     @State private var showBookSheet: Bool = false
     
     var body: some View {
@@ -19,11 +22,11 @@ struct BookListView: View {
                     BookListItem(book: book)
                 }
             }
-            .navigationTitle("My Books")
+            .navigationTitle("Books List")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
-                        tempBook = Book()
+                        newBook = Book(title: "", author: "", details: "", cover: "", series: "", review: "", rating: 1)
                         showBookSheet.toggle()
                     }) {
                         Image(systemName: "plus")
@@ -31,11 +34,11 @@ struct BookListView: View {
                 }
             }
             .sheet(isPresented: $showBookSheet, onDismiss: {
-                if !tempBook.title.isEmpty {
-                    books.append(tempBook)
+                if !newBook.title.isEmpty {
+                    bookViewModel.addBook(newBook)
                 }
             }) {
-                AddEditView(book: $tempBook)
+                AddEditView(book: $newBook)
             }
         }
     }
