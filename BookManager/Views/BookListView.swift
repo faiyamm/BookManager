@@ -39,16 +39,17 @@ struct BookListView: View {
     private func seedBooksIfNeeded() {
         if storedBooks.isEmpty {
             for book in getBooks() {
+                let coverData = book.cover.isEmpty ? nil : UIImage(named: book.cover)?.pngData()
                 let persistentBook = PersistentBook(
                     title: book.title,
                     author: book.author,
                     details: book.details,
+                    cover: coverData,
+                    review: book.review,
+                    rating: book.rating,
                     genre: book.genre,
                     readingStatus: book.readingStatus,
-                    rating: book.rating,
-                    review: book.review,
-                    isFavorite: book.isFavorite,
-                    cover: book.cover
+                    isFavorite: book.isFavorite
                 )
                 modelContext.insert(persistentBook)
             }

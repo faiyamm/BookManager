@@ -21,13 +21,28 @@ struct AddEditView: View {
     @State private var readingStatus: ReadingStatus = .unknown
     @State private var review: String = ""
     @State private var rating: Int = 0
+    @State private var coverUI: UIImage?
 
     var body: some View {
         NavigationStack {
             Form {
+                Section(header: Text("Book cover")){
+                    ImagePicker(image: $coverUI)
+                }
                 Section("Book Details") {
                     TextField("Title", text: $title)
                     TextField("Author", text: $author)
+                    Picker("Genre", selection: $genre){
+                        ForEach(Genre.allCases, id: \.self) { genre in
+                            Text(genre.rawValue).tag(genre)
+                        }
+                    }
+                    
+                    Picker("Reading Status", selection: $readingStatus){
+                        ForEach(ReadingStatus.allCases, id: \.self) { status in
+                            Text(status.rawValue).tag(status)
+                        }
+                    }
                     VStack(alignment: .leading) {
                         Text("Description").font(.caption).foregroundStyle(.secondary)
                         TextEditor(text: $details).frame(height: 100)
@@ -49,6 +64,20 @@ struct AddEditView: View {
                     details = book.details
                     review = book.review
                     rating = book.rating
+                    genre = book.genre
+                    readingStatus = book.readingStatus
+                    if let coverData = book.cover {
+                        self.coverUI = UIImage(data: coverData)
+                    }
+                } else {
+                    title = ""
+                    author = ""
+                    details = ""
+                    genre = .unknown
+                    readingStatus = .unknown
+                    rating = 0
+                    review = ""
+                    coverUI = nil
                 }
             }
             .toolbar {
@@ -60,15 +89,23 @@ struct AddEditView: View {
                         book.genre = genre
                         book.rating = rating
                         book.review = review
+                        book.readingStatus = readingStatus
+                        if(coverUI != nil){
+                            book.cover = coverUI?.jpegData(compressionQuality: 0.8)
+                        }
                     } else {
                         let newBook = PersistentBook(
                             title: title,
                             author: author,
                             details: details,
-                            genre: genre,
+                            review: review,
                             rating: rating,
-                            review: review
+                            genre: genre,
+                            readingStatus: readingStatus
                         )
+                        if(coverUI != nil){
+                            newBook.cover = coverUI?.jpegData(compressionQuality: 0.8)
+                        }
                         modelContext.insert(newBook)
 
                         do {
@@ -85,3 +122,4 @@ struct AddEditView: View {
         }
     }
 }
+

@@ -10,28 +10,43 @@ import SwiftData
 
 @Model
 class PersistentBook {
-    var id: UUID = UUID()
+    
     var title: String
     var author: String
     var details: String
+    var cover: Data?
+    
+    var review: String
+    var rating: Int
     var genre: Genre
     var readingStatus: ReadingStatus
-    var rating: Int
-    var review: String
+    
     var isFavorite: Bool
-    var cover: String
-    var imageData: Data?
 
-    init(title: String = "", author: String = "", details: String = "", genre: Genre = .fantasy, readingStatus: ReadingStatus = .read, rating: Int = 0, review: String = "", isFavorite: Bool = false, cover: String = "", imageData: Data? = nil) {
+    init(
+        title: String,
+        author: String = "",
+        details: String = "",
+        cover: Data? = nil,
+        review: String = "",
+        rating: Int = 0,
+        genre: Genre = .unknown,
+        readingStatus: ReadingStatus = .unknown,
+        isFavorite: Bool = false
+    ){
         self.title = title
         self.author = author
         self.details = details
+        self.cover = cover
+        self.review = review
+        self.rating = rating
         self.genre = genre
         self.readingStatus = readingStatus
-        self.rating = rating
-        self.review = review
         self.isFavorite = isFavorite
-        self.cover = cover
-        self.imageData = imageData
+    }
+    
+    func getNameAndAuthor() -> String {
+        let authorName = author.isEmpty ? "Unknown Author" : author
+        return "\(title) by \(authorName)"
     }
 }

@@ -6,30 +6,32 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BookDetailView: View {
     var book: PersistentBook
+    
     @State private var showEditSheet: Bool = false
+    @State private var isFavorite: Bool
+    
+    @Environment(\.modelContext) private var modelContext
+        
+    init(book: PersistentBook) {
+        self.book = book
+        isFavorite = book.isFavorite
+    }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                
                 HStack(alignment: .top, spacing: 20) {
-                    if let data = book.imageData, let uiImage = UIImage(data: data) {
-                        Image(uiImage: uiImage)
+                    Image(uiImage: (book.cover != nil ? UIImage(data:book.cover!) : UIImage(resource: .bookIcon))!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 140, height: 200)
                             .cornerRadius(8)
                             .shadow(radius: 5)
-                    } else {
-                        Image(book.cover.isEmpty ? "book_icon" : book.cover)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 140, height: 200)
-                            .cornerRadius(8)
-                            .shadow(radius: 5)
-                    }
                     
                     VStack(alignment: .leading, spacing: 10) {
                         Text(book.title)
