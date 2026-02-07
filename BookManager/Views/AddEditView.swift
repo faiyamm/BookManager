@@ -6,68 +6,81 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddEditView: View {
-    @Binding var book: Book
-    @State var workingBook: Book
-    @Environment(\.dismiss) private var dismiss
-
-    init(book: Binding<Book>) {
-        _book = book
-        _workingBook = .init(initialValue: book.wrappedValue)
-    }
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
     
+    var book: PersistentBook?
+    
+    @State private var title: String = ""
+    @State private var author: String = ""
+    @State private var details: String = ""
+    @State private var genre: Genre = .unknown
+    @State private var readingStatus: ReadingStatus = .unknown
+    @State private var review: String = ""
+    @State private var rating: Int = 0
+
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Book Details")) {
-                    TextField("Title", text: $workingBook.title)
-                    TextField("Author", text: $workingBook.author)
-                    
-                    Picker("Genre", selection: $workingBook.genre){
-                        ForEach(Genre.allCases, id: \.self) { genre in
-                            Text(genre.rawValue).tag(genre)
-                        }
+                Section("Book Details") {
+                    TextField("Title", text: $title)
+                    TextField("Author", text: $author)
+                    VStack(alignment: .leading) {
+                        Text("Description").font(.caption).foregroundStyle(.secondary)
+                        TextEditor(text: $details).frame(height: 100)
                     }
-                    
-                    Picker("Reading Status", selection: $workingBook.readingStatus){
-                        ForEach(ReadingStatus.allCases, id: \.self) { status in
-                            Text(status.rawValue).tag(status)
-                        }
-                    }
-                    TextEditor(text: $workingBook.details)
-                        .frame(height: 150)
                 }
-                
-                Section(header: Text("Ratings & Review")) {
-                    StarRatingView(rating: $workingBook.rating)
-                    TextEditor(text: $workingBook.review)
-                        .frame(height: 150)
+                Section("My Review") {
+                    StarRatingField(rating: $rating)
+                    VStack(alignment: .leading) {
+                        Text("Thoughts").font(.caption).foregroundStyle(.secondary)
+                        TextEditor(text: $review).frame(height: 100)
+                    }
                 }
             }
-            .navigationTitle(book.title.isEmpty ? "Add Book" : "Edit \(book.title)")
-
+            .navigationTitle(book == nil ? "Add New Book" : "Edit Book")
+            .onAppear {
+                if let book = book {
+                    title = book.title
+                    author = book.author
+                    details = book.details
+                    review = book.review
+                    rating = book.rating
+                }
+            }
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        book.title = workingBook.title
-                        book.author = workingBook.author
-                        book.details = workingBook.details
-                        book.review = workingBook.review
-                        book.rating = workingBook.rating
-                        book.genre = workingBook.genre
-                        book.readingStatus = workingBook.readingStatus
-                        dismiss()
-                    } label: {
-                        Image(systemName: "checkmark")
+                Button("Save") {
+                    if let book = book {
+                        book.title = title
+                        book.author = author
+                        book.details = details
+                        book.genre = genre
+                        book.rating = rating
+                        book.review = review
+                    } else {
+                        let newBook = PersistentBook(
+                            title: title,
+                            author: author,
+                            details: details,
+                            genre: genre,
+                            rating: rating,
+                            review: review
+                        )
+                        modelContext.insert(newBook)
+
+                        do {
+                            try modelContext.save()
+                            print("Book saved to database!")
+                        } catch {
+                            print("Error saving: \(error.localizedDescription)")
+                        }
                     }
-                    .disabled(workingBook.title.isEmpty || (workingBook.author.isEmpty && workingBook.details.isEmpty))
+                    dismiss()
                 }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
+                .disabled(title.isEmpty)
             }
         }
     }

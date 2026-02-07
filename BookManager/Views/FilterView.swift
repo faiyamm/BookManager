@@ -8,60 +8,64 @@
 import SwiftUI
 
 struct FilterView: View {
+    
     @Binding var selectedGenre: Genre?
     @Binding var selectedReadingStatus: ReadingStatus?
+    @Environment(\.dismiss) var dismiss
     
-    @State private var tempSelectedGenre: Genre? = nil
-    @State private var tempSelectedReadingStatus: ReadingStatus? = nil
-    @Environment(\.dismiss) private var dismiss
-
+    @State private var workingGenre: Genre?
+    @State private var workingReadingStatus: ReadingStatus?
+    
     init(selectedGenre: Binding<Genre?>, selectedReadingStatus: Binding<ReadingStatus?>) {
-        self._selectedGenre = selectedGenre
-        self._selectedReadingStatus = selectedReadingStatus
-
-        self._tempSelectedGenre = State(initialValue: selectedGenre.wrappedValue)
-        self._tempSelectedReadingStatus = State(initialValue: selectedReadingStatus.wrappedValue)
+        _selectedGenre = selectedGenre
+        _selectedReadingStatus = selectedReadingStatus
+        _workingGenre = State(initialValue: selectedGenre.wrappedValue)
+        _workingReadingStatus = State(initialValue: selectedReadingStatus.wrappedValue)
     }
-
+    
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Filter Preferences")) {
-                    Picker("Genre", selection: $tempSelectedGenre) {
+                Section(header: Text("Select a genre")) {
+                    Picker("Genre", selection: $workingGenre) {
                         Text("All Genres").tag(nil as Genre?)
                         ForEach(Genre.allCases, id: \.self) { genre in
                             if genre != .unknown {
-                                Text(genre.rawValue).tag(genre as Genre?)
+                                Text(genre.rawValue.capitalized).tag(genre as Genre?)
                             }
                         }
                     }
-                    
-                    Picker("Status", selection: $tempSelectedReadingStatus) {
+                }
+                
+                Section(header: Text("Select a reading status")) {
+                    Picker("Reading Status", selection: $workingReadingStatus) {
                         Text("All Statuses").tag(nil as ReadingStatus?)
                         ForEach(ReadingStatus.allCases, id: \.self) { status in
                             if status != .unknown {
-                                Text(status.rawValue).tag(status as ReadingStatus?)
+                                Text(status.rawValue.capitalized).tag(status as ReadingStatus?)
                             }
                         }
                     }
                 }
                 
                 Section {
-                    Button("Clear All", role: .destructive) {
-                        tempSelectedGenre = nil
-                        tempSelectedReadingStatus = nil
+                    Button("Clear All Filters", role: .destructive) {
+                        workingGenre = nil
+                        workingReadingStatus = nil
                     }
                 }
             }
-            .navigationTitle("Filters")
+            .navigationTitle("Filter favorite books")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Apply") {
-                        selectedGenre = tempSelectedGenre
-                        selectedReadingStatus = tempSelectedReadingStatus
+                        selectedGenre = workingGenre
+                        selectedReadingStatus = workingReadingStatus
                         dismiss()
                     }
                 }

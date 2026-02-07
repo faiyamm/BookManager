@@ -10,19 +10,17 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage(SETTINGS_THEME_KEY) var theme: Theme = DEFAULT_SETTINGS_THEME_VALUE
     
-    @StateObject var booksManager = BookViewModel()
-    
     var body: some View {
         TabView {
-            BookListView(books: $booksManager.books, bookViewModel: booksManager)
+            BookListView()
                 .tabItem {
                     Label("Books", systemImage: "books.vertical.fill")
                 }
             
-            FavoritesView(books: $booksManager.books)
-                .tabItem {
-                    Label("Favorites", systemImage: "heart.fill")
-                }
+//            FavoritesView()
+//                .tabItem {
+//                    Label("Favorites", systemImage: "heart.fill")
+//                }
             
             SettingsView()
                 .tabItem {

@@ -8,19 +8,28 @@
 import SwiftUI
 
 struct BookDetailView: View {
-    @Binding var book: Book
+    var book: PersistentBook
     @State private var showEditSheet: Bool = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(alignment: .top, spacing: 20) {
-                    Image(book.cover.isEmpty ? "default_cover" : book.cover)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 140, height: 200)
-                        .cornerRadius(8)
-                        .shadow(radius: 5)
+                    if let data = book.imageData, let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 140, height: 200)
+                            .cornerRadius(8)
+                            .shadow(radius: 5)
+                    } else {
+                        Image(book.cover.isEmpty ? "book_icon" : book.cover)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 140, height: 200)
+                            .cornerRadius(8)
+                            .shadow(radius: 5)
+                    }
                     
                     VStack(alignment: .leading, spacing: 10) {
                         Text(book.title)
@@ -33,7 +42,11 @@ struct BookDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             CustomCapsule(text: book.genre.rawValue, color: .blue)
                             CustomCapsule(text: book.readingStatus.rawValue, color: .orange)
-                            FavoriteToggle(isFavorite: $book.isFavorite)
+
+                            FavoriteToggle(isFavorite: Binding(
+                                get: { book.isFavorite },
+                                set: { book.isFavorite = $0 }
+                            ))
                         }
                     }
                 }
@@ -43,7 +56,7 @@ struct BookDetailView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Synopsis")
                         .font(.headline)
-                    Text(book.details)
+                    Text(book.details.isEmpty ? "No synopsis provided." : book.details)
                         .foregroundStyle(.primary)
                 }
                 
@@ -58,8 +71,6 @@ struct BookDetailView: View {
                         }
                     }
                     
-//                    FavoriteToggle(isFavorite: $book.isFavorite)
-                    
                     Text(book.review.isEmpty ? "No review yet." : book.review)
                         .font(.body)
                         .italic(book.review.isEmpty)
@@ -70,10 +81,14 @@ struct BookDetailView: View {
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button("Edit") { showEditSheet.toggle() }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") {
+                    showEditSheet.toggle()
+                }
+            }
         }
         .sheet(isPresented: $showEditSheet) {
-            AddEditView(book: $book)
+            AddEditView(book: book)
         }
     }
 }
