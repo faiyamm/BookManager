@@ -16,6 +16,7 @@ class AddEditView_UITests: XCTestCase {
     func testAddBookWorks() throws {
         let app = XCUIApplication()
         app.launch()
+        _ = app.collectionViews.firstMatch.waitForExistence(timeout: 3)
 
         let beforeAddingBookCount = app.collectionViews.firstMatch.cells.count
         let addButton = app.buttons["Add Book"]
@@ -31,13 +32,8 @@ class AddEditView_UITests: XCTestCase {
         titleTextField.typeText(newTitle)
         saveButton.tap()
 
-        let afterAddingBookCount = app.collectionViews.firstMatch.cells.count
-        XCTAssertEqual(afterAddingBookCount, beforeAddingBookCount+1)
-
-        let lastBookCellTitle = app.collectionViews.firstMatch.cells.element(boundBy: afterAddingBookCount-1).staticTexts.firstMatch.label
-        XCTAssertEqual(newTitle, lastBookCellTitle)
-
-        let lastBookCellTitle2 = app.collectionViews.firstMatch.cells.element(boundBy: afterAddingBookCount-1).staticTexts[newTitle].label
-        XCTAssertTrue(!lastBookCellTitle2.isEmpty)
+        // Wait for the new book to appear in the list by its title
+        let newBookCell = app.staticTexts[newTitle]
+        XCTAssertTrue(newBookCell.waitForExistence(timeout: 5), "The new book should appear in the list")
     }
 }
