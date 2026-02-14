@@ -11,50 +11,80 @@ import SwiftData
 
 @MainActor @Suite("Favorite View Testing")
 struct FavoritesViewTests {
-    
+
     // Setup an in-memory container for SwiftData models
     let container: ModelContainer
-    
+
     init() throws {
         let schema = Schema([PersistentBook.self])
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         container = try ModelContainer(for: schema, configurations: [config])
     }
-    
+
     @Test("No filter is applied")
     func noFilterApplied() {
-        let books: [PersistentBook] = []
-        let filteredBooks = filterFavoriteBooks(books: books)
-        #expect(filteredBooks.isEmpty)
-    }
-    
-    @Test("Filter Books with favorites")
-    func filterBooksWithFavorites() {
-        // You must initialize models within the context of the container
         let books = [
-            PersistentBook(title: "Book 1", isFavorite: false),
-            PersistentBook(title: "Book 2", isFavorite: true),
-            PersistentBook(title: "Book 3", isFavorite: false),
-            PersistentBook(title: "Book 4", isFavorite: true)
+            PersistentBook(title:"Book 1"),
+            PersistentBook(title:"Book 2", isFavorite: true),
+            PersistentBook(title:"Book 3"),
         ]
 
-        let filteredBooks = filterFavoriteBooks(books: books)
+        //act
+        let filteredBooks = filterFavoriteBooks(books: books, useFavorite: false)
+
+        //assert
+        #expect(filteredBooks.count == 3)
+    }
+
+    @Test("Filter Books with favorites")
+    func filterBooksWithFavorites() {
+        //arrange
+        let books = [
+            PersistentBook(title:"Book 1"),
+            PersistentBook(title:"Book 2", isFavorite: true),
+            PersistentBook(title:"Book 3"),
+            PersistentBook(title:"Book 4", isFavorite: true),
+        ]
+
+        //act
+        let filteredBooks = filterFavoriteBooks(books: books, useFavorite: true)
+
+        //assert
         #expect(filteredBooks.count == 2)
+        #expect(filteredBooks.first?.title == "Book 2")
+        #expect(filteredBooks[1].title == "Book 4")
     }
 
     @Test("Filter Books by Genre")
     func filterBooksByGenre() {
+        //arrange
         let books = [
-            PersistentBook(title: "Book 1", genre: .fantasy, isFavorite: true),
-            PersistentBook(title: "Book 2", genre: .horror, isFavorite: true),
-            PersistentBook(title: "Book 3", genre: .fantasy, isFavorite: true),
-            PersistentBook(title: "Book 4", genre: .fantasy, isFavorite: false)
+            PersistentBook(title:"Book 1"),
+            PersistentBook(title:"Book 2", isFavorite: true),
+            PersistentBook(title:"Book 3", genre: .fantasy),
+            PersistentBook(title:"Book 4", genre: .horror, isFavorite: true),
         ]
 
-        let filteredBooks = filterFavoriteBooks(books: books, selectedGenre: .fantasy)
+        //act
+        let filteredBooks = filterFavoriteBooks(books: books, genre: .fantasy)
+        //assert
+        #expect(filteredBooks.count == 1)
+        #expect(filteredBooks.first?.title == "Book 3")
 
-        #expect(filteredBooks.count == 2)
-        #expect(filteredBooks.allSatisfy { $0.genre == .fantasy })
+
+        //act II
+        let filteredBooks2 = filterFavoriteBooks(books: books, genre: .unknown)
+        //assert II
+        #expect(filteredBooks2.count == 2)
+        #expect(filteredBooks2.first?.title == "Book 1")
+        #expect(filteredBooks2[1].title == "Book 2")
+
+
+        //act III
+        let filteredBooks3 = filterFavoriteBooks(books: books, genre: .horror)
+        //assert III
+        #expect(filteredBooks3.count == 1)
+        #expect(filteredBooks3.first?.title == "Book 4")
     }
 
     @Test("Filter Books by Reading Status")
@@ -66,7 +96,7 @@ struct FavoritesViewTests {
             PersistentBook(title: "Book 4", readingStatus: .reading, isFavorite: false)
         ]
 
-        let filteredBooks = filterFavoriteBooks(books: books, selectedReadingStatus: .reading)
+        let filteredBooks = filterFavoriteBooks(books: books, useFavorite: true, readingStatus: .reading)
 
         #expect(filteredBooks.count == 2)
         #expect(filteredBooks.allSatisfy { $0.readingStatus == .reading })

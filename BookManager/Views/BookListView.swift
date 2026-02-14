@@ -25,10 +25,11 @@ struct BookListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") { showBookSheet.toggle() }
+                        .accessibilityLabel("Add Book")
                 }
             }
             .sheet(isPresented: $showBookSheet) {
-                AddEditView(book: nil)
+                AddEditView(modelContext: modelContext)
             }
             .onAppear {
                 seedBooksIfNeeded()

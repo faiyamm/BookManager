@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Combine
+internal import Combine
 
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = [] {

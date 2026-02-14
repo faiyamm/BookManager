@@ -9,117 +9,63 @@ import SwiftUI
 import SwiftData
 
 struct AddEditView: View {
-    @Environment(\.modelContext) var modelContext
+
+    @StateObject private var viewModel: AddEditViewModel
+
     @Environment(\.dismiss) var dismiss
-    
-    var book: PersistentBook?
-    
-    @State private var title: String = ""
-    @State private var author: String = ""
-    @State private var details: String = ""
-    @State private var genre: Genre = .unknown
-    @State private var readingStatus: ReadingStatus = .unknown
-    @State private var review: String = ""
-    @State private var rating: Int = 0
-    @State private var coverUI: UIImage?
+
+    init(book: PersistentBook? = nil, modelContext: ModelContext) {
+        _viewModel = StateObject(
+            wrappedValue: AddEditViewModel(
+                book: book,
+                modelContext: modelContext
+            )
+        )
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section(header: Text("Book cover")){
-                    ImagePicker(image: $coverUI)
+                    ImagePicker(image: $viewModel.coverUI)
                 }
                 Section("Book Details") {
-                    TextField("Title", text: $title)
-                    TextField("Author", text: $author)
-                    Picker("Genre", selection: $genre){
+                    TextField("Title of the book", text: $viewModel.title)
+                    TextField("Author", text: $viewModel.author)
+                    Picker("Genre", selection: $viewModel.genre){
                         ForEach(Genre.allCases, id: \.self) { genre in
                             Text(genre.rawValue).tag(genre)
                         }
                     }
-                    
-                    Picker("Reading Status", selection: $readingStatus){
+
+                    Picker("Reading Status", selection: $viewModel.readingStatus){
                         ForEach(ReadingStatus.allCases, id: \.self) { status in
                             Text(status.rawValue).tag(status)
                         }
                     }
-                    VStack(alignment: .leading) {
-                        Text("Description").font(.caption).foregroundStyle(.secondary)
-                        TextEditor(text: $details).frame(height: 100)
-                    }
+                    TextEditor(text: $viewModel.details)
+                        .frame(height: 150)
                 }
-                Section("My Review") {
-                    StarRatingField(rating: $rating)
-                    VStack(alignment: .leading) {
-                        Text("Thoughts").font(.caption).foregroundStyle(.secondary)
-                        TextEditor(text: $review).frame(height: 100)
-                    }
+                Section(header: Text("Book review")){
+                    StarRatingField(rating: $viewModel.rating)
+                    TextEditor(text: $viewModel.review)
+                        .frame(height: 150)
                 }
             }
-            .navigationTitle(book == nil ? "Add New Book" : "Edit Book")
-            .onAppear {
-                if let book = book {
-                    title = book.title
-                    author = book.author
-                    details = book.details
-                    review = book.review
-                    rating = book.rating
-                    genre = book.genre
-                    readingStatus = book.readingStatus
-                    if let coverData = book.cover {
-                        self.coverUI = UIImage(data: coverData)
-                    }
-                } else {
-                    title = ""
-                    author = ""
-                    details = ""
-                    genre = .unknown
-                    readingStatus = .unknown
-                    rating = 0
-                    review = ""
-                    coverUI = nil
+            .navigationTitle(viewModel.navigationTitle)
+            .toolbar{
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        viewModel.saveBook()
+                        dismiss()
+                    }.disabled(viewModel.isNotSavable)
                 }
-            }
-            .toolbar {
-                Button("Save") {
-                    if let book = book {
-                        book.title = title
-                        book.author = author
-                        book.details = details
-                        book.genre = genre
-                        book.rating = rating
-                        book.review = review
-                        book.readingStatus = readingStatus
-                        if(coverUI != nil){
-                            book.cover = coverUI?.jpegData(compressionQuality: 0.8)
-                        }
-                    } else {
-                        let newBook = PersistentBook(
-                            title: title,
-                            author: author,
-                            details: details,
-                            review: review,
-                            rating: rating,
-                            genre: genre,
-                            readingStatus: readingStatus
-                        )
-                        if(coverUI != nil){
-                            newBook.cover = coverUI?.jpegData(compressionQuality: 0.8)
-                        }
-                        modelContext.insert(newBook)
-
-                        do {
-                            try modelContext.save()
-                            print("Book saved to database!")
-                        } catch {
-                            print("Error saving: \(error.localizedDescription)")
-                        }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
                     }
-                    dismiss()
                 }
-                .disabled(title.isEmpty)
             }
         }
     }
 }
-

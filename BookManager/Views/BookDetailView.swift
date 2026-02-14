@@ -90,7 +90,7 @@ struct BookDetailView: View {
             }
         }
         .sheet(isPresented: $showEditSheet) {
-            AddEditView(book: book)
+            AddEditView(book: book, modelContext: modelContext)
         }
     }
 }

@@ -21,20 +21,33 @@ struct FavoritesView: View {
     }
 
     private var favoriteBooks: [PersistentBook] {
-        books.filter { book in
-            book.isFavorite &&
-            (selectedGenre == nil || book.genre == selectedGenre) &&
-            (selectedReadingStatus == nil || book.readingStatus == selectedReadingStatus)
-        }
+        filterFavoriteBooks(books: books, useFavorite: true, genre: selectedGenre, readingStatus: selectedReadingStatus)
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
+                HStack{
+                    if(selectedGenre != nil){
+                        Text("Genre: \(selectedGenre!.rawValue)")
+                            .foregroundColor(.secondary)
+                        Button("X"){
+                            selectedGenre = nil
+                        }
+                    }
+                    if(selectedReadingStatus != nil){
+                        Text("Status: \(selectedReadingStatus!.rawValue)")
+                            .foregroundColor(.secondary)
+                        Button("X"){
+                            selectedReadingStatus = nil
+                        }
+                    }
+                }
                 LazyVGrid(columns: layout, spacing: 20) {
                     ForEach(favoriteBooks, id: \.self) { book in
                         NavigationLink(destination: BookDetailView(book: book)) {
                             FavoriteCard2(book: book)
+                                .padding()
                         }
                     }
                 }
